@@ -1,0 +1,15 @@
+<div class="card bg-base-100 m-2 shadow-sm ">
+  <figure>
+    <img width="300" height="300" disableOptimizedImageWarning
+      [src]="products().images |imageProductPipe"
+      alt="{{products()?.title}}" />
+  </figure>
+  <div class="card-body">
+    <h2 class="card-title hover:underline"  [routerLink]="['/product', products()?.id]">{{products()?.title}}</h2>
+    <p class="text-justify font-normal ">{{products()?.description | slice : 0 : 70}}....</p>
+    <span class="text-xs text-cyan-500 m-2">${{products()?.price}}</span>
+    <div class="card-actions justify-end">
+      <a [routerLink]="['/product', products()?.id]" class="link link-accent" >view product</a>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,15 @@
+<h1 class="text-3xl font-bold font-montserrat mt-2 pt-2">Todos los Productos de : {{gender()}}</h1>
+<h2 class="text-xl mb-5 pt-1 mt-1">para todos los gustos</h2>
+<div
+  class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mt-2  gap-3"
+>
+
+@if (genderResource.value()) {
+  @for (product of genderResource.value()?.products; track product.id){
+
+    <app-product-card  [products]="product"/>
+  }
+}
+</div>
+
+<app-pagination   [pages]="pages()" [currentPage]="paginationServices.currentPage()"/>
