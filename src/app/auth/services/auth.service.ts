@@ -8,9 +8,9 @@ import { catchError, firstValueFrom, map, Observable, of, tap } from 'rxjs';
 type AuthStatus = 'checking' | 'authenticated' | 'not-authenticated';
 
 export interface usuario {
-  fullName :string;
-  password :string;
-  email :string;
+  fullName: string;
+  password: string;
+  email: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -45,7 +45,7 @@ export class AuthService {
 
   token = computed<string | null>(() => this._token());
 
-  isAdmin = computed(()=> this._user()?.roles.includes("admin") ?? false );
+  isAdmin = computed(() => this._user()?.roles.includes('admin') ?? false);
 
   login(email: string, password: string): Observable<boolean> {
     return this._http
@@ -71,10 +71,9 @@ export class AuthService {
       );
   }
 
-  register(user:usuario):Observable<boolean>{
-    return this._http.post<UserResponse>(`${this._urlBase}/auth/register`,user)
-    .pipe(
-        tap((response) => {
+  register(user: usuario): Observable<boolean> {
+    return this._http.post<UserResponse>(`${this._urlBase}/auth/register`, user).pipe(
+      tap((response) => {
         this.handleAuthSuccessRegister(response);
       }),
       map((data) => true),
@@ -95,7 +94,11 @@ export class AuthService {
         this.handleAuthSuccess(response);
       }),
       map((data) => true),
-      catchError((error: any) => this.handleAuthError(error)),
+      catchError((error: any) => {
+        console.error('Error HTTP:', error);
+        console.error('Respuesta del servidor:', error.error);
+        return this.handleAuthError(error);
+      }),
     );
   }
 
@@ -107,7 +110,7 @@ export class AuthService {
     localStorage.removeItem('token');
   }
 
-  private handleAuthSuccess(resp: LoginResponse ) {
+  private handleAuthSuccess(resp: LoginResponse) {
     this._authStatus.set('authenticated');
     this._user.set(resp.user);
     this._token.set(resp.token);
@@ -115,8 +118,7 @@ export class AuthService {
     localStorage.setItem('token', resp.token);
   }
 
-
-   private handleAuthSuccessRegister(resp: UserResponse ) {
+  private handleAuthSuccessRegister(resp: UserResponse) {
     this._authStatus.set('authenticated');
     this._user.set(resp.user);
     this._token.set(resp.token);
