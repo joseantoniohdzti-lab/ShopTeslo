@@ -66,6 +66,8 @@ export class AuthService {
         catchError((error: any) => {
           // this._token.set(null);
           // this._authStatus.set('not-authenticated');
+          console.error('Error HTTP:', error);
+          console.error('Respuesta del servidor:', error.error);
           return this.handleAuthError(error);
         }),
       );
