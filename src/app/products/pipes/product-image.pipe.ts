@@ -1,8 +1,10 @@
+
 import { inject, Pipe, PipeTransform } from '@angular/core';
 import { ProductsServices } from '@products/services/product.service';
 
 @Pipe({
-  name: 'imageProductPipe'
+  name: 'imageProductPipe',
+  standalone: true,
 })
 export class ProductImagenPipe implements PipeTransform {
   private tesloShopServices = inject(ProductsServices);
@@ -14,20 +16,27 @@ export class ProductImagenPipe implements PipeTransform {
       return defaultImage;
     }
 
-    if (typeof value === 'string' && value.startsWith('blob:')) {
-      return value;
-    }
-
     if (Array.isArray(value)) {
       return value.length > 0
-        ? this.tesloShopServices.getRutaImagenProduct(value[0])
+        ? this.transform(value[0])
         : defaultImage;
     }
 
-    if (typeof value === 'string' && value.trim().length > 0) {
-      return this.tesloShopServices.getRutaImagenProduct(value);
+    const trimmed = value.trim();
+
+    if (trimmed.length === 0) {
+      return defaultImage;
     }
 
-    return defaultImage;
+    if (
+      trimmed.startsWith('data:image/') ||
+      trimmed.startsWith('blob:') ||
+      trimmed.startsWith('http://') ||
+      trimmed.startsWith('https://')
+    ) {
+      return trimmed;
+    }
+
+    return this.tesloShopServices.getRutaImagenProduct(trimmed);
   }
 }

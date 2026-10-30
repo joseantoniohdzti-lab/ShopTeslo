@@ -48,14 +48,7 @@ export class ProductDetails implements OnInit {
   imageFileList: FileList | undefined = undefined;
 
   imagenesCarusel = computed(() => {
-
-    console.log("imagene inicial:",this.product().images)
-    console.log("imagene temImages:",this.tempImages())
-
     const currentProdutImagen = [...(this.product()?.images ?? []), ...this.tempImages()];
-
-    console.log("imagenes current:",currentProdutImagen);
-
     return currentProdutImagen ?? [];
   });
 
@@ -106,12 +99,14 @@ export class ProductDetails implements OnInit {
       //   id: UuidV4(),
       // };
 
-      const product = await firstValueFrom(this.productServices.crearNewProduct(productLike,this.imageFileList));
+      const product = await firstValueFrom(
+        this.productServices.crearNewProduct(productLike, this.imageFileList),
+      );
 
       this.route.navigate(['/admin/product/', product.products[0].id]);
     } else {
       const product = await firstValueFrom(
-        this.productServices.updateProduct(this.product().id, productLike,this.imageFileList),
+        this.productServices.updateProduct(this.product().id, productLike, this.imageFileList),
       );
       this.route.navigate(['/admin/product/', product.products[0].id]);
     }
@@ -126,13 +121,28 @@ export class ProductDetails implements OnInit {
   //imagenes
 
   onFilesChanged(event: Event) {
-    this.tempImages.set([]);
-    this.imageFileList = undefined;
-    const files = (event.target as HTMLInputElement).files;
+    const input = event.target as HTMLInputElement;
+    const files = input.files;
 
-    const imageUrls = Array.from(files ?? []).map((file) => URL.createObjectURL(file));
+    if (!files || files.length === 0) {
+      this.tempImages.set([]);
+      this.imageFileList = undefined;
+      return;
+    }
 
-    this.tempImages.set(imageUrls);
-    this.imageFileList = files ?? undefined;
+    this.imageFileList = files;
+    const fileArray = Array.from(files);
+    const readPromises = fileArray.map(
+      (file) =>
+        new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.readAsDataURL(file);
+        }),
+    );
+
+    Promise.all(readPromises).then((imagesBase64) => {
+      this.tempImages.set(imagesBase64);
+    });
   }
 }

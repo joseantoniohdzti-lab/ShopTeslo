@@ -1,3 +1,3 @@
 export const environment = {
-  urlApiBaseTeleshop : "http://localhost:3000/api",
+  urlApiBaseTeleshop : "https://nest-teslo-shop-complete-1ibp.onrender.com/api",
 };

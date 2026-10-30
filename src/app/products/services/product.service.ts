@@ -73,7 +73,6 @@ export class ProductsServices {
     }
 
     return this.http.get<Product>(`${this.urlBase}/products/${idSlug}`).pipe(
-      tap((producto) => console.log(producto)),
       tap((response) => {
         this.oneProductCache.set(idSlug, response);
       }),
